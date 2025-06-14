@@ -23,31 +23,25 @@ func NewQuery(cmd string, args []string) Query {
 	}
 }
 
-func Parser(args string) (Query, error) {
-	cmd := strings.Fields(args)
-	if len(cmd) == 0 {
+func Parser(line string) (Query, error) {
+	args := strings.Fields(line)
+	if len(args) == 0 {
 		return Query{}, nil
 	}
 
-	query := Query{}
-	switch cmd[0] {
+	query, cmd, args := Query{}, args[0], args[1:]
+	switch cmd {
 	case SET:
-		if len(cmd) != 3 {
+		if len(args) != 2 {
 			return query, fmt.Errorf("SET expects 2 arguments")
 		}
-		query.Cmd, query.Args = cmd[0], cmd[1:]
+		query.Cmd, query.Args = cmd, args
 		return query, nil
-	case GET:
-		if len(cmd) != 2 {
-			return query, fmt.Errorf("GET expects 1 arguments")
+	case GET, DEL:
+		if len(args) != 1 {
+			return query, fmt.Errorf("%s expects 1 arguments", cmd)
 		}
-		query.Cmd, query.Args = cmd[0], cmd[1:]
-		return query, nil
-	case DEL:
-		if len(cmd) != 2 {
-			return query, fmt.Errorf("DEL expects 1 arguments")
-		}
-		query.Cmd, query.Args = cmd[0], cmd[1:]
+		query.Cmd, query.Args = cmd, args
 		return query, nil
 	}
 	return query, fmt.Errorf("unknown %q command", args)

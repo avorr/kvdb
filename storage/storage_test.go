@@ -6,14 +6,14 @@ import (
 )
 
 var (
-	storage = Storage{Hash: make(map[string]string, 100)}
+	storage = Storage{data: make(map[string]string)}
 	ctx     = context.Background()
 )
 
 var tests = struct {
 	storage Engine
 }{
-	storage: &Storage{storage.Hash},
+	storage: &Storage{storage.data},
 }
 
 func TestStorage(t *testing.T) {

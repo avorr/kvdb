@@ -11,26 +11,26 @@ type Engine interface {
 }
 
 type Storage struct {
-	Hash map[string]string
+	data map[string]string
 }
 
 func New() *Storage {
 	return &Storage{
-		Hash: make(map[string]string, 100),
+		data: make(map[string]string),
 	}
 }
 
 func (o *Storage) Set(ctx context.Context, key, value string) error {
-	o.Hash[key] = value
+	o.data[key] = value
 	return nil
 }
 
 func (o *Storage) Get(ctx context.Context, key string) (string, bool, error) {
-	v, ok := o.Hash[key]
+	v, ok := o.data[key]
 	return v, ok, nil
 }
 
 func (o *Storage) Del(ctx context.Context, key string) error {
-	delete(o.Hash, key)
+	delete(o.data, key)
 	return nil
 }

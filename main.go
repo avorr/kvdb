@@ -1,41 +1,18 @@
 package main
 
 import (
-	"bufio"
-	"fmt"
-	parser "kvdb/compute/parser"
+	"go.uber.org/zap"
 	"kvdb/storage/engine"
-	"os"
+	"log"
 )
 
 func main() {
-	db := engine.New()
-	scanner := bufio.NewScanner(os.Stdin)
-
-	fmt.Print("cli> ")
-	for scanner.Scan() {
-		dbQuery, err := parser.Parser(scanner.Text())
-		db.Query = dbQuery
-		if err != nil {
-			fmt.Printf("%s\ncli> ", err)
-			continue
-		}
-
-		v, ok, err := db.RunQuery()
-		if err != nil {
-			db.Logger.Error(err.Error())
-		}
-		if db.Cmd == parser.GET {
-			if ok {
-				fmt.Println(v)
-			} else {
-				fmt.Println(nil)
-			}
-		}
-		fmt.Print("cli> ")
+	logger, err := zap.NewDevelopment()
+	if err != nil {
+		log.Fatalf("can't initialize zap logger: %v", err)
 	}
+	defer logger.Sync()
 
-	if scanner.Err() != nil {
-		db.Logger.Fatal(scanner.Err().Error())
-	}
+	db := engine.New(logger)
+	db.Cli()
 }

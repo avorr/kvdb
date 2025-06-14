@@ -2,6 +2,8 @@ package engine
 
 import (
 	"context"
+	"go.uber.org/zap"
+	"log"
 	"testing"
 )
 
@@ -10,9 +12,14 @@ var (
 )
 
 func TestEngine(t *testing.T) {
-	db := New()
+	logger, err := zap.NewDevelopment()
+	if err != nil {
+		log.Fatalf("can't initialize zap logger: %v", err)
+	}
+	defer logger.Sync()
+	db := New(logger)
 	t.Parallel()
-	err := db.storage.Set(ctx, "key", "value")
+	err = db.storage.Set(ctx, "key", "value")
 	if err != nil {
 		t.Fatal(err)
 	}
